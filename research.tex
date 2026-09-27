@@ -26,59 +26,40 @@
 \newcommand{\cen}{\mathrm C}
 \newcommand{\net}{\mathrm{net}}
 
-\title{A Two-Graph Model of Fleet Coordination\\[3pt]
-\large Physical Feasibility, Competitive Dispatch, and Fleet-Profit Optimization}
-\author{}
-\date{}
+\title{Base to Based\\[3pt]
+\large : Two-Graph Model of Fleet Coordination}
+\author{Arya Chakrabarti, Arthur Chen}
+\date{9/27/2026}
 
 \begin{document}
 \maketitle
 
 \begin{abstract}
-We formulate coordination of a distributed battery fleet using two coupled
-graphs. A radial distribution graph $G_1$ constrains simultaneous injections;
-each battery's time-expanded state-of-charge graph $G_2^i$ describes its
-admissible intertemporal trajectories. The coupling is through joint network
-constraints and an aggregate-dependent electricity price. We distinguish
-threshold heuristics, independent price-taking optimization, competitive
-equilibria, finite-player Nash equilibria, and centralized fleet-profit
-optimization. Under convex trajectory constraints, a competitive variational
-equilibrium maximizes a concave integral potential. For affine price impact,
-the finite-player game also has an exact potential, different from both the
-competitive potential and fleet profit. We prove existence and qualified
-uniqueness results, central dominance over any feasible benchmark, a
-separability result identifying when coordination has zero value, and an
-additive bound on the profit gain attributable to affine price impact. An
-explicit counterexample shows that no universal $4/3$ bound applies to the
-profit ratio. We distinguish fleet value from system welfare and retail
-portfolio value. The four-coincident-peak (4CP) transmission-cost regime, and
-its scheduled replacement, are used as institutional context for the strategy
-graph rather than as an independent revenue claim; we show that for a
-residential fleet coincident-peak timing is monetized through the energy and
-portfolio channels already modeled, not through a transmission credit.
-Previously reported numerical results are retained with their provenance and
-interpretation limits; the mathematical claims do not depend on reproducing
-those simulations.
+We model the battery fleet using two 
+graphs.  They are coupled through a joint network with graph $G_1$ providing physical constraints and $G_2^i$ describing strategy. 
+
+The motivation of this research was to prove existence and 
+uniqueness of the profit gain in different strategies. We wanted to learn more how Base's profit stucture works, and now we're here.
+
+We can model this as a game and find an an exact potential for the affine case that is distinct from both
+competitive potential and fleet profit. From this, we can get a better understanding about the market making abilities of Base. 
+
+
 \end{abstract}
 
 \tableofcontents
 
-\section{Scope, Information, and Notation}
+\section{Scope}
 \label{sec:setup}
 
-The primary question is how much additional operating value a common owner
+A question is how much additional operating value a common owner
 can obtain by jointly scheduling batteries, relative to an explicitly
 specified independent controller. The two-graph construction separates
-\emph{electrical feasibility} from \emph{intertemporal choice and economic
-interaction}. A positive premium is an outcome to measure, not an assumption.
+\emph{electrical feasibility} from \emph{ choice }.
 
-Fix a finite horizon of dispatch intervals
-$\T=\{0,\ldots,T-1\}$ with duration $\Delta>0$ hours. State variables are
-indexed by $t=0,\ldots,T$. Unless otherwise stated, all comparisons are
-deterministic, conditional on the same exogenous data and information.
-An optimization using realized future data is a perfect-foresight benchmark;
-it is not a causal operating policy. A stochastic or rolling-horizon extension
-must impose the same information filtration on every controller being compared.
+Suppose we fix a finite horizon of dispatch intervals
+$\T=\{0,\ldots,T-1\}$ with duration $\Delta>0$ hours. Let all state variables be
+indexed by $t=0,\ldots,T$. 
 
 \begin{table}[htbp]
 \centering\small
@@ -102,23 +83,18 @@ $D_i(x_i)=\kappa_i\Delta\sum_t(c_{it}+g_{it})$ & Trajectory degradation cost, do
 $\X_i,\X$ & Local and joint feasible trajectory sets \\
 \bottomrule
 \end{tabularx}
-\caption{All monetary objectives are measured over the same stated horizon.}
+\caption{Variables and Meaning.}
 \end{table}
 
-The coefficients $\kappa_i$ use grid-side throughput as an accounting
-convention; a cell-throughput model would include the appropriate efficiency
-factors. This distinction does not affect the potential arguments if costs
-remain separable and convex. The concrete model below uses linear $D_i$.
 
-\section{Graph 1: Physical Distribution Feasibility}
+
+\section{Graph 1: Electrical Constraints}
 \label{sec:g1}
 
 \subsection{Radial network and linearized flow}
 Let $G_1=(\mathcal N_1,\mathcal E_1)$ be a rooted radial feeder with root $0$.
 A fleet spanning several feeders can be represented by a forest, with an
-independent root condition for each component. A single feeder is sufficient
-for the definitions below. Each battery is assigned to a specified node;
-several batteries may share a node.
+independent root condition for each component. Each node is assigned the attributes of at least one battery, and multiple batteries may be assigned to one node.
 
 For a directed edge $e=(m,n)$ away from the root, write
 $\operatorname{down}(n)$ for the downstream node set. In a lossless
@@ -138,8 +114,6 @@ $v_{nt}=|V_{nt}|^2$ the per-unit squared voltage. Then
  \sum_{e\in\mathcal P(0\to n)}(r_eP_{et}+x_eR_{et}).
  \label{eq:voltage}
 \end{equation}
-The powers and impedances must be converted consistently if another unit
-system or single-phase convention is used.
 
 \subsection{Thermal and voltage constraints}
 For a specified apparent-power rating $\overline S_e$, impose
@@ -153,8 +127,7 @@ When $R_{et}$ is fixed and $|R_{et}|\le\overline S_e$, define
 $K_{et}=\sqrt{\overline S_e^2-R_{et}^2}$. Equation~\eqref{eq:thermal}
 then becomes the linear constraint $-K_{et}\le P_{et}\le K_{et}$.
 If $|R_{et}|>\overline S_e$, the prescribed operating point is infeasible.
-If reactive control is instead optimized, the thermal condition is a convex
-second-order cone constraint and inverter capability limits must also be added.
+
 
 \begin{definition}[Joint instantaneous feasibility]
 Let $\mathcal A_t\subseteq\R^N$ be the set of battery injections satisfying
@@ -163,14 +136,8 @@ connection import/export limits. In the fixed-reactive model,
 $\mathcal A_t$ is a closed convex polyhedron.
 \end{definition}
 
-These constraints certify feasibility only within the stated balanced,
-linearized electrical model. They do not certify a full unbalanced AC power
-flow, protection coordination, or transient response. Local voltage and
-frequency measurements alone cannot establish every upstream thermal limit.
-Network parameters and aggregate downstream loading must be supplied or
-estimated to evaluate $\mathcal A_t$.
 
-\section{Graph 2: Battery Trajectories and Joint Constraints}
+\section{Graph 2: Battery Trajectories}
 \label{sec:g2}
 
 \subsection{Local dynamics and boundary conditions}
@@ -185,42 +152,34 @@ The local battery model is
  e_{i0}&=e_i^{\rm init},\qquad e_{iT}=e_i^{\rm init}.
  \label{eq:boundary}
 \end{align}
-Here $\underline e_{it}$ is a declared household backup reserve. The terminal
-equality gives an energy-neutral accounting horizon and prevents apparent
-profits from unpriced depletion of initial energy. A different terminal set
-or terminal value is permissible, but must be the same in every benchmark and
-included in the objective where appropriate. Time-dependent availability and
-power bounds can be added as local constraints.
+Here $\underline e_{it}$ is a declared household backup reserve.
 
 The exact operating model additionally imposes
 \begin{equation}
- c_{it}g_{it}=0,\qquad i=1,\ldots,N,\ t\in\T.
+ c_{it}g_{it}=0,\qquad i=1,\ldots,N,\ t\in\T,
  \label{eq:exclusive}
 \end{equation}
-Let $\X_i^{\rm ex}$ denote this generally nonconvex local set. For convex
+
+because a battery cannot be have net inflow and outflow of energy at the same time unless both values are 0. 
+
+Let us have $\X_i^{\rm ex}$ denote this  nonconvex set. For convex
 analysis, use the explicit relaxation $\X_i^{\rm rel}$ obtained by replacing
 \eqref{eq:exclusive} with
 \begin{equation}
  \frac{c_{it}}{\overline P_i^c}
- +\frac{g_{it}}{\overline P_i^d}\le1,
+ +\frac{g_{it}}{\overline P_i^d}\le1
  \label{eq:moderelax}
 \end{equation}
-assuming positive ratings; unavailable actions are set to zero separately.
-This is the convex hull of the two instantaneous charging/discharging line
-segments. It is not asserted to be the convex hull of the complete
-intertemporal exact set.
+assuming positive ratings. 
 
-\begin{remark}[When the relaxation certifies an executable optimum]
+\begin{remark}[Why the relaxation certifies an optimum]
 A relaxed optimum satisfying \eqref{eq:exclusive} is also a global optimum
 of the exact problem with the same objective, since
-$\X_i^{\rm ex}\subseteq\X_i^{\rm rel}$. Without this check, the relaxed
-central value is an upper bound. Negative prices, terminal conditions, and
-network constraints can make simultaneous charging and discharging attractive
-in a relaxation. It must not be assumed absent without proof or verification.
+$\X_i^{\rm ex}\subseteq\X_i^{\rm rel}$. 
 \end{remark}
 
 \subsection{Time-expanded graph representation}
-For each battery, choose finite energy bins and a finite action menu.
+For each battery, lets choose finite energy bins and a finite action menu.
 $G_2^i$ has nodes $(t,e)$ and directed edges
 $(t,e)\to(t+1,e')$ whenever a menu action $(c,g)$ satisfies
 \eqref{eq:soc} and the local bounds. Fix the initial node and permitted
@@ -233,13 +192,6 @@ trajectory. At fixed prices, the profit attached to an edge is
 Consequently, local price-taking optimization on this finite acyclic graph
 is a longest-path problem, or a shortest-path problem after negating profits.
 
-One path per battery is an indivisible, discrete choice. Fractional path flows
-represent a relaxation or a divisible population of batteries; they do not
-automatically represent the exact operation of one physical battery. Convex
-theorems below apply to the declared continuous relaxation, not automatically
-to this discrete path-selection problem. A discretized exact path problem is
-a finite restriction of the continuous exact problem; no discretization-error
-bound is claimed here.
 
 \subsection{Coupling the two graphs}
 For $s\in\{\mathrm{ex},\mathrm{rel}\}$, define
@@ -253,39 +205,25 @@ In the fixed-reactive model, write these shared constraints compactly as
 $Ax\le b$. Each block $A_i$ maps battery $i$'s trajectory into the shared
 network inequalities, so $Ax=\sum_iA_ix_i$.
 
-$G_1$ excludes \emph{joint combinations} of transitions in the $G_2^i$.
-An individual edge cannot generally be declared network-feasible without the
-other batteries' simultaneous actions. The joint strategy graph can be
-viewed as a product graph with inadmissible combinations removed; explicit
-construction of that exponentially large graph is unnecessary for continuous
-trajectory optimization.
+$G_1$ excludes \emph{joint combinations} of transitions in the $G_2^i$; The joint strategy graph can be
+viewed as a product graph with inadmissible combinations removed.
 
-\begin{assumption}[Feasibility for the mathematical results]
+\begin{assumption}[]
 \label{ass:feasible}
-The horizon and all power/energy bounds are finite, and the chosen joint
-feasible set is nonempty. The convex results use
-$\X=\X^{\rm rel}$, a compact convex set. Statements using the exact or finite
-path model name that model explicitly. Network constraints and household
-reserves are identical across the regimes being compared.
+The horizon and all power/energy bounds are finite, and the chosen joint feasible set is nonempty. 
+Network constraints and household reserves are identical across the regimes being compared.
 \end{assumption}
 
-\section{Price Model, Payoffs, and Distinct Benchmarks}
+\section{Price Model, Payoffs}
 \label{sec:regimes}
 
-\subsection{Aggregate price impact}
-For each interval, assume
+\subsection{Aggregate price}
+For each interval, simplify the price dependent on net injection being
 \begin{equation}
  p_t(Q_t)=f_t(L_t-Q_t),
  \label{eq:price}
 \end{equation}
-where $f_t$ is continuous and nondecreasing on an interval containing $L_t$
-and all feasible net loads. This includes the reference point needed for
-integrals starting at zero injection. Use differentiability only where
-derivatives are stated.
-This is a reduced-form market-impact model, not a complete ERCOT clearing
-model. Supply availability, renewable output, fuel costs, reserves, and
-congestion may vary with $t$ and with the conditioning scenario. A common
-single price is an explicit simplifying assumption.
+where $f_t$ is continuous and nondecreasing on an interval containing $L_t$. 
 
 The affine specialization is
 \begin{equation}
@@ -293,6 +231,7 @@ The affine specialization is
  \label{eq:affine}
 \end{equation}
 with $\beta_t$ measured in $(\$/\mathrm{MWh})/\mathrm{MW}$.
+
 At a fixed price vector $p$, battery $i$'s price-taking objective is
 \begin{equation}
  U_i(x_i;p)=\sum_t\Delta p_tq_{it}-D_i(x_i).
@@ -304,28 +243,25 @@ Its realized strategic payoff, when its action affects price, is instead
  \label{eq:strategicpayoff}
 \end{equation}
 
-The affine scalar model excludes cross-location and cross-time price effects.
 With a vector price $p(q)$, a competitive integral potential requires suitable
 integrability conditions (in particular a symmetric Jacobian on a simply
-connected differentiable domain); it does not follow from aggregation alone.
+connected differentiable domain).
 
-\subsection{Threshold and independent-optimization benchmarks}
+\subsection{Threshold}
 A threshold policy is a specified map from available information and local
 state into charging, discharging, or idling, for example using thresholds
-$\ell_{it}(e)<u_{it}(e)$. Its forecast, thresholds, power sizing, reserve
-handling, and terminal treatment are part of its definition. Following a
-shared price signal does not itself make such a policy a Nash equilibrium.
+$\ell_{it}(e)<u_{it}(e)$. 
 
 An independent horizon optimizer instead selects
 \begin{equation}
  \widehat x_i\in\argmax_{x_i\in\X_i}U_i(x_i;\widehat p)
  \label{eq:independent}
 \end{equation}
-against a supplied exogenous forecast $\widehat p$. Generally
-$\widehat p\ne p(Q(\widehat x))$; thus independent optimization need not be
+against a supplied  forecast $\widehat p$. Generally
+$\widehat p\ne p(Q(\widehat x))$; therefore, independent optimization should not be
 a competitive equilibrium either.
 
-Independent local trajectories can violate shared feeder limits. One explicit
+One explicit
 offline benchmark with network protection is
 \begin{equation}
  x^{\rm B}=\argmin_{x\in\X}
@@ -333,19 +269,15 @@ offline benchmark with network protection is
  \label{eq:projection}
 \end{equation}
 where the positive-definite, dimensionally scaled weights are fixed in advance.
-On the convex set this projection exists and is unique. It includes network,
-reserve, and terminal conditions and optimizes proximity to requested
-trajectories, not profit. It is a shared safety intervention; the benchmark
-must be described as independent scheduling with network protection, not as
-fully autonomous operation. An online alternative must respect the same
-information available to the central controller and update SoC from executed
-actions. No claim is made that all safety interventions yield the same value.
+On the convex set this projection exists and is unique.
 
-\section{Competitive Equilibrium and the Integral Potential}
+\section{Competitive Equilibrium}
 \label{sec:competitive}
 
-\subsection{Product constraints: a price-consistent competitive solution}
-First remove the shared feeder constraints and let $\X=\prod_i\X_i$.
+\subsection{ Price-consistent competitive solution}
+
+ Let $\X=\prod_i\X_i$.
+ 
 A price-taking competitive solution is a profile $x^{\rm W}$ such that
 \begin{equation}
  x_i^{\rm W}\in\argmax_{x_i\in\X_i}
@@ -355,11 +287,12 @@ A price-taking competitive solution is a profile $x^{\rm W}$ such that
 \end{equation}
 Each battery treats the price as fixed when deviating; the prices are then
 required to be consistent with aggregate action. This is the competitive
-price-taking condition, or its nonatomic/Wardrop interpretation. For a finite
-fleet, it is not the Nash condition for the strategic payoff
+price-taking condition, or its nonatomic/Wardrop. For a finite
+fleet, it is not the Nash condition for the strategic payoff (which we will not prove here).
 \eqref{eq:strategicpayoff}.
 
-\subsection{Shared constraints: a variational selection}
+\subsection{Shared constraints}
+
 Let $H_i$ be the linear map $x_i\mapsto q_i$. Define
 \begin{equation}
  F_i^{\rm W}(x)=\nabla D_i(x_i)-\Delta H_i^\top p(Q(x)).
@@ -376,15 +309,13 @@ is $x^{\rm W}\in\X$ satisfying
 \end{equation}
 \end{definition}
 
-This definition imposes a particular treatment of shared constraints.
+
 Where Lagrange multipliers exist, a common network multiplier $\lambda\ge0$
 supports individual optimization of
 $U_i(x_i;p)-\lambda^\top A_ix_i$, with
-$\lambda^\top(Ax-b)=0$. Standard relative-interior constraint qualifications
-are sufficient for this multiplier representation. Independent controllers
-responding only to the public energy price need not implement it.
+$\lambda^\top(Ax-b)=0$.
 
-\begin{proposition}[Correct potential and aggregate uniqueness]
+\begin{proposition}[uniqueness]
 \label{prop:potential}
 Under Assumption~\ref{ass:feasible}, define
 \begin{equation}
@@ -392,12 +323,12 @@ Under Assumption~\ref{ass:feasible}, define
                   -\sum_iD_i(x_i).
  \label{eq:potential}
 \end{equation}
-The function $\Phi$ is concave. Its global maximizers exist and coincide
+The function $\Phi$ is concave, its global maximizers exist and coincide
 with the solutions of \eqref{eq:competitivevi}. On a product feasible set,
 these are exactly the competitive solutions
 \eqref{eq:competitivefixedpoint}. If each $p_t$ is strictly decreasing on
 the feasible aggregate interval, all maximizers have the same aggregate
-injection vector $Q^{\rm W}$. Individual trajectories need not be unique.
+injection vector $Q^{\rm W}$. 
 \end{proposition}
 
 \begin{proof}
@@ -423,17 +354,13 @@ costs differ across batteries; aggregate $Q$ alone need not determine cost.
 Strict aggregate uniqueness also does not imply uniqueness of a nonconvex
 exact or discrete-path equilibrium.
 
-\section{Finite-Player Nash Equilibrium: An Exact Affine Potential}
+\section{Finite-Player Nash Equilibrium}
 \label{sec:nash}
 
-For product strategy sets, a Nash equilibrium is a profile at which no
-battery can increase \eqref{eq:strategicpayoff} through a unilateral local
-deviation. With shared constraints, define
-$\X_i(x_{-i})=\{y_i:(y_i,x_{-i})\in\X\}$ and use feasible unilateral
-deviations in this set; the resulting concept is a generalized Nash
-equilibrium (GNE).
+With shared constraints, define
+$\X_i(x_{-i})=\{y_i:(y_i,x_{-i})\in\X\}$ .
 
-\begin{proposition}[Exact potential for affine impact]
+\begin{proposition}[Exact potential]
 \label{prop:atomic}
 Under \eqref{eq:affine}, the strategic game has exact payoff potential
 \begin{equation}
@@ -465,8 +392,7 @@ compactness ensure that at least one such maximizer exists.
 For convex sets, $\Psi$ is concave because $\beta_t\ge0$, and its block
 gradient is the player's own-payoff gradient. On a product set, the separate
 Nash first-order conditions combine into the global first-order condition
-for $\Psi$; concavity makes it sufficient. With shared constraints, the
-same global condition is precisely the variational Nash condition.
+for $\Psi$; concavity makes it sufficient.
 \end{proof}
 
 The exact-potential identity also applies to a finite path-selection game
@@ -475,19 +401,12 @@ global potential maximizer, but not that every pure equilibrium globally
 maximizes the potential. For general nonlinear impact, the affine identity
 does not extend without additional structure.
 
-This model need not be a classical unweighted Rosenthal congestion game:
-injections are signed and players can contribute different magnitudes to a
-time slot. Proposition~\ref{prop:atomic} proves the needed affine result
-directly. In a classical Rosenthal cost game, a pure Nash equilibrium is a
-profile with no unilateral potential-decreasing deviation; every global
-potential minimum is such an equilibrium. These minima need not minimize
-total social cost \cite{rosenthal}.
 
-\section{Centralized Fleet Dispatch and Its Mathematical Guarantees}
+\section{Centralized Fleet Dispatch}
 \label{sec:central}
 
-\subsection{Objective and existence}
-Define realized fleet operating profit by
+\subsection{Existence}
+Define fleet operating profit by
 \begin{equation}
  \Pi(x)=\sum_i\pi_i(x)
        =\sum_t\Delta Q_t p_t(Q_t)-D(x),\qquad D=\sum_iD_i.
@@ -498,22 +417,14 @@ A centralized fleet optimum is
  x^{\cen}\in\argmax_{x\in\X}\Pi(x).
  \label{eq:central}
 \end{equation}
-Continuity and compactness ensure existence, including for the exact
-nonconvex model. They do not by themselves give an efficient global solver.
+Continuity and compactness ensure existence.
 
 In the affine case,
 \begin{equation}
  \Pi(x)=\sum_t\Delta(a_tQ_t-\beta_tQ_t^2)-D(x).
  \label{eq:centralqp}
 \end{equation}
-This is concave. On $\X^{\rm rel}$ with fixed reactive flow, the base model
-is a concave quadratic maximization over linear constraints, equivalently a
-convex quadratic minimization. If $\beta_t>0$ at every interval, the optimal
-aggregate $Q^{\cen}$ is unique, by the midpoint argument in
-Proposition~\ref{prop:potential}. This need not determine a unique dispatch
-allocation across batteries. With charging/discharging binaries, it becomes
-a mixed-integer convex quadratic formulation, whose global optimum must be
-certified separately.
+This is concave. 
 
 For twice differentiable $f_t$, the revenue term
 $h_t(Q)=Qf_t(L_t-Q)$ satisfies
@@ -526,9 +437,9 @@ sufficient intervalwise condition for concavity. Convexity of $f_t$ alone
 does not suffice. Piecewise curves and price caps require a separate
 concavity assessment; a local optimum is not automatically global.
 
-\subsection{The marginal incentives are different}
-Before efficiencies, degradation, and constraint multipliers are included,
-the price-related marginal terms are
+\subsection{Marginal Incentives}
+
+The price-related marginal terms are
 \begin{equation}
  \begin{array}{ll}
  \text{competitive price taker:} & p_t(Q_t),\\[2pt]
@@ -538,33 +449,18 @@ the price-related marginal terms are
  \label{eq:marginals}
 \end{equation}
 For affine impact, these become $p_t$, $p_t-\beta_tq_{it}$, and
-$p_t-\beta_tQ_t$. These are marginal \emph{price components}, not complete
-optimality conditions. For example, with marginal stored-energy value
-$\lambda_{i,t+1}$ and no binding inequality constraints, stationarity for a
-positive discharge and a positive charge, respectively, has the form
-\[
- m_{it}-\kappa_i-\lambda_{i,t+1}/\eta_{d,i}=0,
- \qquad
- -m_{it}-\kappa_i+\eta_{c,i}\lambda_{i,t+1}=0,
-\]
-where $m_{it}$ is the applicable marginal term, before network adjustments.
-These equations refer to the relevant active operating mode. Binding
-constraints replace equalities with the appropriate KKT inequalities.
-There is generally no single constant threshold for the entire fleet, and
-no theorem that central dispatch is smaller in every high-price interval.
+$p_t-\beta_tQ_t$.
 
-\subsection{Zero coordination value under separability}
+\subsection{Zero coordination value}
 \begin{proposition}[Separability benchmark]
 \label{prop:separable}
-If prices are exogenous, the feasible set is a product, and the objective
-is additive over batteries, then
+If prices are exogenous, 
 \begin{equation}
  \max_{x\in\prod_i\X_i}\sum_iU_i(x_i;p)
        =\sum_i\max_{x_i\in\X_i}U_i(x_i;p).
  \label{eq:separable}
 \end{equation}
-Thus centralized optimization cannot improve on independent optimal
-dispatch under the same information and local constraints.
+This means centralized optimization cannot improve on independent optimal paths.
 \end{proposition}
 \begin{proof}
 Every summand is bounded above by its individual maximum. Selecting an
@@ -572,21 +468,15 @@ individual maximizer for each battery attains the sum, since their product
 is feasible. Compactness guarantees these maximizers exist.
 \end{proof}
 
-This result does not require convexity. Shared physical constraints or
-endogenous prices destroy the stated separability. They permit, but do not
-guarantee, a positive premium. Beating a threshold heuristic when the problem
-is separable establishes the value of better local scheduling, not a need
-for joint control.
 
-\section{Coordination Value: Valid Bounds and a Counterexample}
+
+\section{Coordination Value: Valid Bounds}
 \label{sec:premium}
 
 \subsection{Common scoring and central dominance}
 Let $x^{\rm B}\in\X$ be a specified feasible baseline: a protected threshold
 policy, protected independent optimizer, competitive variational equilibrium,
-or Nash equilibrium. Evaluate both regimes using the same exogenous scenario,
-price-response function, constraints, and accounting objective, but their
-\emph{own induced prices}. Write
+or Nash equilibrium. 
 \begin{equation}
  V_{\cen}=\Pi(x^{\cen}),\quad V_{\rm B}=\Pi(x^{\rm B}),\quad
  \Delta V_{\rm B}=V_{\cen}-V_{\rm B},\quad
@@ -594,7 +484,7 @@ price-response function, constraints, and accounting objective, but their
  \label{eq:premiumdef}
 \end{equation}
 
-\begin{proposition}[Dominance and certified comparisons]
+\begin{proposition}[]
 \label{prop:dominance}
 If $x^{\cen}$ is a global optimum and $x^{\rm B}$ is feasible for the same
 problem, then $\Delta V_{\rm B}\ge0$. If also $V_{\rm B}>0$, then
@@ -606,21 +496,9 @@ give
                     \le\overline V_{\cen}-V_{\rm B}.
 \]
 \end{proposition}
-\begin{proof}
-The baseline is an admissible candidate in the central maximization. The
-remaining statements follow by subtraction and, for the ratio, division
-by a positive number.
-\end{proof}
 
-A relaxed solution that violates exact operating constraints is not a
-feasible lower bound for the exact central problem. A rolling-horizon
-controller also need not dominate another controller on every realized
-trajectory. Report $\Delta V_{\rm B}$ and dollars per battery alongside the
-ratio; omit the ratio when the baseline is nonpositive or too close to zero
-to be informative. Fixed ownership costs cancel in $\Delta V$ but can
-substantially alter a profit ratio, so the accounting scope must be stated.
 
-\subsection{A valid additive bound for affine impact}
+\subsection{Additive bound for affine impact}
 \begin{proposition}[Market-impact premium bound]
 \label{prop:impactbound}
 Under affine impact, let $x^{\rm W}$ globally maximize the competitive
@@ -653,21 +531,12 @@ $K$ terms yields the middle bound; central optimality gives the lower
 bound. Since $K\ge0$, the remaining inequalities follow.
 \end{proof}
 
-On the convex model, Proposition~\ref{prop:potential} identifies the
-potential maximizer with the competitive variational equilibrium. The
-bound does not apply to an arbitrary threshold baseline or an arbitrary GNE.
-It establishes a small \emph{absolute} impact premium when impact slopes
-and aggregate dispatch are small. A near-unity ratio additionally requires
-a baseline profit bounded away from zero. With $\beta_t=0$ for all $t$,
-competitive variational and central fleet optimization have the same
-objective even if shared network constraints bind. Implementing that
-variational equilibrium already incorporates network coordination.
 
 \subsection{No universal affine profit-ratio bound}
 \begin{proposition}[Unbounded ratio in an affine two-period example]
 \label{prop:counterexample}
 There is no universal upper bound of $4/3$, or any other finite constant,
-on $\rho_{\rm W}$ for the battery-profit objective under affine prices.
+on $\rho_{\rm W}$.
 \end{proposition}
 \begin{proof}
 Consider two one-hour intervals, lossless batteries, no degradation, no
@@ -701,8 +570,7 @@ Competitive & 49 & 69 & 71 & 98\\
 Central fleet & 25 & 45 & 95 & 1,250\\
 \bottomrule
 \end{tabular}
-\caption{Exact analytical example: $\rho_{\rm W}=1250/98\approx12.7551$.
-These are not ERCOT-calibrated estimates.}
+\caption{Exact analytical example: $\rho_{\rm W}=1250/98\approx12.7551$..}
 \end{table}
 
 The same capacity-saturated profile is also a finite-player Nash equilibrium
@@ -711,18 +579,12 @@ profile, battery $i$'s own-profit derivative with respect to its shifted
 energy is $100-2(49)-2(49/N)=2-98/N\ge0$. Its payoff is concave in that
 energy, so its constrained optimum is its upper bound $49/N$.
 
-The classical $4/3$ theorem concerns the ratio of total routing costs for
-fixed-demand nonatomic routing with nonnegative affine latency functions
-\cite{roughgarden}. It is not invariant under a change from total cost to
-arbitrage profit. No scarcity nonlinearity is required for the counterexample.
 
-\section{Fleet Profit, System Welfare, and Retail Portfolio Value}
+\section{Fleet Profit}
 \label{sec:welfare}
 
-\subsection{A system-cost interpretation requires an additional assumption}
-Suppose, specifically for a welfare model, that $f_t(\ell)=C_t'(\ell)$ is
-the genuine marginal system production cost for exogenous demand $\ell$,
-with no omitted network costs or externalities. Then
+\subsection{System-cost}
+Suppose, specifically for a welfare model, that $f_t(\ell)=C_t'(\ell)$, then
 \begin{equation}
  C_t(L_t)-C_t(L_t-Q_t)=\int_0^{Q_t}f_t(L_t-s)\,\dd s.
  \label{eq:welfare}
@@ -735,16 +597,15 @@ system-efficient even when it earns the fleet less than \eqref{eq:central}.
 Market settlement prices, scarcity adders, and offers need not equal true
 marginal social costs. Without the additional assumption above, this welfare
 interpretation is not justified. Throughout this paper, \eqref{eq:central}
-is called \emph{fleet-profit optimal}, not a system social optimum. A profit
-gain from altering prices is not by itself evidence of a system-efficiency
-gain or a conclusion about market-rule compliance.
+is called \emph{fleet-profit optimal}, not a system social optimum. 
 
 \subsection{Retail exposure changes the owner's objective}
 For a simplified single-price retail portfolio, let $B_t$ be residual
 unhedged household demand before controlled battery dispatch, with positive
 $B_t$ denoting net purchases. Assume fixed retail receipts, fixed hedge
-payments, and settlement of all residual energy at $p_t(Q_t)$. The
-dispatch-dependent portfolio margin is
+payments, and settlement of all residual energy at $p_t(Q_t)$.
+
+The dispatch-dependent portfolio margin is
 \begin{equation}
  \Pi^{\rm REP}(x)=\sum_t\Delta(Q_t-B_t)p_t(Q_t)-D(x)
                     +\text{constants}.
@@ -755,109 +616,64 @@ Relative to zero dispatch, its incremental value is
  V^{\rm REP}(x)=\sum_t\Delta\left[(Q_t-B_t)p_t(Q_t)+B_tp_t(0)\right]-D(x).
  \label{eq:repvalue}
 \end{equation}
-This reference is an accounting comparison; operational dominance over zero
-dispatch requires that zero dispatch actually be feasible.
+
 For affine impact, the marginal price component is
 \begin{equation}
  p_t(Q_t)-\beta_t(Q_t-B_t).
  \label{eq:repmarginal}
 \end{equation}
 Lower prices benefit the owner's remaining net purchases. Therefore
-$B_t$ can materially change optimal dispatch. Locational basis, actual hedge
-settlements, retail tariffs, losses, and other charges require a richer
-portfolio model. The battery-only objective is recovered by setting $B_t=0$.
-The affine bound in Proposition~\ref{prop:impactbound} is stated only for
-the battery-only objective, not automatically for retail portfolio value.
+$B_t$ can change optimal dispatch. 
 
 Base's published customer documentation states that it owns and schedules
 its batteries \cite{base}. Accordingly, independent controllers are a
-counterfactual operating architecture, not a claim that homeowners actually
-play a strategic dispatch game.
+counterfactual operating architecture.
 
-\section{Coincident-Peak Timing: Regulatory Context and a Prediction--Deployment Problem}
+\section{Coincident-Peak Timing (4CP)}
 \label{sec:cp}
 
-The four-coincident-peak (4CP) transmission-cost regime is the institutional
+How we understand it, four-coincident-peak (4CP) transmission-cost regime is the institutional
 reason a single 15-minute interval can carry outsized economic weight in
-ERCOT. We use it in two ways: as \emph{context} that motivates treating the
+ERCOT. 
+
+We use it in two ways: as \emph{context} that motivates treating the
 coincident-peak (CP) interval as a distinguished target on $G_2$, and as a
-\emph{stochastic extension} of the strategy graph. We deliberately do not
-treat 4CP avoidance as an independent revenue term for a residential fleet;
-the subsection on exposure explains why, and shows that CP-timing value, where
-it exists, is already carried by the objectives \eqref{eq:fleetprofit} and
-\eqref{eq:repvalue}.
+stochastic extension of the strategy graph. 
 
 \subsection{The 4CP mechanism and its scheduled replacement}
 Under 4CP, ERCOT allocates transmission cost of service to distribution
 providers according to each provider's load during the single highest
 15-minute system-wide demand interval in each of June, July, August, and
 September; the following calendar year's transmission charge scales with that
-coincident-peak demand \cite{ercot4cp,rtoinsider}. An illustrative
-postage-stamp rate on the order of \$68.55/kW-year has been referenced in the
-current proceeding, so a demand-metered load that removes consumption from all
-four peaks can avoid transmission charges on the order of tens of thousands of
-dollars per MW-year \cite{ercot4cp,nrg}. This regime is scheduled to change:
+coincident-peak demand \cite{ercot4cp,rtoinsider}. 
+
+This policy is scheduled to change:
 under Texas Senate Bill 6, the Public Utility Commission of Texas must overhaul
 the methodology by December 31, 2026, with a twelve-coincident-peak (12CP)
 approach measured in 30-minute intervals under active consideration in Project
-No.~58484 \cite{sb6reform,rtoinsider}. We therefore parameterize the setting by
-a target-interval count $m$ and an interval length $\Delta_{\rm CP}$, rather
-than fixing $m=4$ and $\Delta_{\rm CP}=15$ minutes; every statement below is
-stated in those parameters.
+No.~58484 \cite{sb6reform,rtoinsider}. 
 
-\subsection{Who is exposed: an attribution the model must respect}
+We therefore parameterize the setting by
+a target-interval count $m$ and an interval length $\Delta_{\rm CP}$, rather
+than fixing $m=4$ and $\Delta_{\rm CP}=15$ minutes.
+
+\subsection{Who is exposed}
 4CP is a billing determinant only for interval/demand-metered accounts, in
 practice larger commercial and industrial loads. Residential and
 small-commercial transmission cost is recovered through volumetric
 (\$/kWh) or fixed allocations that are not tied to the coincident-peak
 intervals; there is accordingly no direct per-meter transmission saving from
-residential curtailment during a CP, and any class-level effect is socialized
-across the rate class rather than captured by an individual participant
-\cite{nrg,huntsman4cp}. Two consequences are load-bearing for this paper.
-
-\begin{remark}[CP timing is an energy-price object, not a transmission credit, for a residential fleet]
-\label{rem:attribution}
-For a fleet behind residential meters, coincident-peak timing is monetized, if
-at all, through the energy and ancillary channels already modeled: the
-fleet-profit objective \eqref{eq:fleetprofit} for an arbitrage-only owner and
-the retail-portfolio objective \eqref{eq:repvalue} for a load-serving owner
-that avoids wholesale purchases at the peak. It is not an additional
-transmission-charge term. Reporting a coincident-peak strategy as ``4CP
-savings'' for such a fleet would double count or misattribute value that is
-in fact temporal energy-price arbitrage.
-\end{remark}
-
-\begin{remark}[Cycling does not reduce metered energy]
-\label{rem:roundtrip}
-Storage cycling does not reduce total metered consumption. With round-trip
-efficiency $\eta_{c,i}\eta_{d,i}<1$, serving load from the battery during a CP
-and refilling later strictly increases total grid import over the cycle by the
-conversion loss. A flat volumetric transmission charge is therefore not
-lowered, and is marginally raised, by CP time-shifting. The recoverable value
-is entirely the temporal spread in the energy price (and any ancillary or
-program payment), captured by \eqref{eq:repvalue}: purchase in low-price
-intervals is displaced from purchase in high-price intervals, not eliminated.
-\end{remark}
-
-A further modeling point: with high solar penetration the gross-load CP
-interval (afternoon) and the scarcity price interval (net-load evening)
-increasingly diverge, and CP intervals can occur when prices are comparatively
-low \cite{nrg}. A residential fleet should target the interval that carries the
-monetizable energy/ancillary spread, which need not be the gross-load CP that
-sets transmission allocation.
+residential curtailment during a CP.
 
 \subsection{The coincident-peak interval as an uncertain target}
 Within a CP window, let the realized peak interval $\tau$ be a random element
 of a candidate set $\mathcal C\subseteq\T$ with distribution $\pi$ induced by
-weather, demand, renewable output, and---endogenously---by the aggregate
+weather, demand, renewable output, and by the aggregate
 curtailment of all CP-responsive load. Aggregate avoidance flattens and can
 displace the peak; this signal degradation is documented and is part of the
 regulatory case for reform \cite{nrg,rtoinsider}. A fleet that is a negligible
-share of system load---on the order of tens of MW against a summer peak near
-$95$ GW \cite{peak2026}---does not materially move $\pi$ and best-responds to
-it. This is the taker (nonatomic) posture already used in
-Section~\ref{sec:limit}, applied now to the distribution over the peak's
-\emph{timing} rather than its price level.
+share of system load does not materially move $\pi$ and best-responds to
+it. 
 
 \subsection{Deployment as optimal stopping under a shared budget}
 Over the window, several candidate high-load intervals are revealed
@@ -888,41 +704,13 @@ exactly as in Proposition~\ref{prop:separable}; the expectation over $\pi$,
 common to all batteries, does not couple them.
 \end{proof}
 
-A positive deployment-coordination premium therefore requires at least one
-coupling channel, exactly paralleling the deterministic case:
-\begin{enumerate}
-\item \textbf{Shared network constraints.} A feeder or transformer that cannot
-pass the simultaneous discharge of all co-located batteries makes $\mathcal
-A_t$ bind within a group, so the fleet must allocate scarce feeder headroom
-across batteries and intervals. This is a $G_1$ effect.
-\item \textbf{A pooled budget.} A fleet-level cycle, wear, or backup allowance,
-rather than a per-battery one, must be allocated across heterogeneous
-batteries; the coordinator spends the cheapest available headroom first and
-spares backup-critical homes.
-\item \textbf{Risk aversion.} If the owner is averse to the lumpy realized
-payment or charge, hedging deployment across several candidate intervals
-reduces variance; expected value alone does not capture this.
-\end{enumerate}
-A distinct centralized-forecasting gain---pooling fleet telemetry to sharpen
-$\pi$---is a prediction improvement, not deployment coordination, and should be
-accounted separately so the two are not conflated.
-
-\begin{remark}[Crowding raises the hedging value]
-As aggregate CP avoidance intensifies, $\pi$ becomes more diffuse, which
-raises the value of hedged deployment relative to point-forecast firing: the
-deployment-coordination premium of channel~3 is increasing in forecast
-dispersion. This does not raise total available value, which the same
-flattening reduces.
-\end{remark}
 
 \subsection{Placement in the two-graph model}
 The CP setting adds a stochastic weight to $G_2$: a trajectory that is armed
 and available at the realized $\tau$ carries an option value proportional to
 the monetizable peak spread in \eqref{eq:repvalue}, while $G_1$ supplies the
 shared constraint of channel~1 that can make coordinated deployment strictly
-better than independent deployment. As everywhere in this paper, the premium is
-a consequence of shared constraints, endogenous prices, or risk, not of
-synchronization as such. Operationally, per-customer (micro) prediction
+better than independent deployment. Operationally, per-customer (micro) prediction
 supplies each battery's availability and cost inputs, and the fleet (macro)
 layer solves the stochastic, feeder-constrained, budget-limited deployment
 against $\pi$.
@@ -940,9 +728,8 @@ $q_{it}^{(N)}=a_{it}^{(N)}/N$. Then
 If the empirical distribution of the rescaled actions converges weakly to
 $\mu_t$ and these actions are uniformly bounded, then
 $Q_t^{(N)}\to\int a\,\mu_t(\dd a)$. By contrast,
-$N^{-1}\sum_iq_{it}^{(N)}=Q_t^{(N)}/N\to0$ under bounded aggregate power.
-Convergence of the empirical distribution is an assumption here, not a
-consequence of the fleet's size alone.
+$N^{-1}\sum_iq_{it}^{(N)}=Q_t^{(N)}/N\to0$.
+
 
 For affine impact the finite-player and competitive potentials satisfy
 \begin{equation}
@@ -956,17 +743,12 @@ $\sum_i|q_{it}|\le M_t$ uniformly, then
  \le\frac{\Delta\varepsilon_N}{2}\sum_t\beta_tM_t\longrightarrow0.
  \label{eq:uniformbound}
 \end{equation}
-The bound follows from $q_{it}^2\le\varepsilon_N|q_{it}|$. It shows why
-individual price-impact corrections vanish while the fleet correction
-$\beta_tQ_t$ can remain finite. It does not, without further assumptions
-on convergence of feasible sets and equilibrium selections, prove convergence
-of the equilibrium profiles.
+The bound follows from $q_{it}^2\le\varepsilon_N|q_{it}|$. 
 
-Common price signals or common shocks can preserve correlated behavior.
-Conditional laws of large numbers can remove idiosyncratic noise while the
-aggregate remains random through common noise. Thus no deterministic
-mean-field limit, mean-field-game existence result, or diversification of
-common signals is assumed solely from $N\to\infty$.
+It shows why
+individual price-impact corrections vanish while the fleet correction
+$\beta_tQ_t$ can remain finite. 
+
 
 \section{Numerical Interpretation and Verification Protocol}
 \label{sec:numerics}
@@ -977,12 +759,7 @@ The original numerical study reported ERCOT real-time 15-minute
 minimum/mean/maximum of approximately \$18/40/101 per MWh, an inverse-supply
 model with a scarcity component, and 5 kW/15 kWh units with round-trip
 efficiency 0.81. Table~\ref{tab:reported} preserves its reported dollar values.
-The source code, exact date, price-response parameters, and solver
-certificates were not supplied with the manuscript. Accordingly, these are
-\emph{author-reported prior simulation outputs}, not independently reproduced
-results of this theoretical revision. The baseline's classification as an
-equilibrium remains conditional on verifying the relevant optimality
-conditions above.
+
 
 \begin{table}[htbp]
 \centering\small
@@ -996,113 +773,21 @@ Scarcity & 50,000 & 144,779 & 144,781 & 2\\
 Scarcity & 150,000 & 323,061 & $\sim325,000$ & $\sim1,939$\\
 \bottomrule
 \end{tabular}
-\caption{Previously reported simulation outputs, retained rather than replaced.
-The final row inherits the approximation in its reported central value.}
+
 \label{tab:reported}
 \end{table}
 
-The implied ratios are approximately $1.000086$, $1.000229$, $1.000014$,
-and $1.0060$, respectively; the extra digits in the first three are
-arithmetic from rounded dollar inputs, not evidence of solver precision.
-The original affine-control row reported $\rho\approx1$ for 150,000 units
-without dollar values; it remains an unverified reported observation.
-At the stated unit ratings, the two fleet sizes correspond to 250 MW/750 MWh
-and 750 MW/2,250 MWh, respectively. They should not be presented as an
-unspecified fleet of only a few thousand units.
 
-If reproduced with the corrected objectives and a common feasible set,
-these runs would demonstrate small incremental value in those scenarios.
-They do not establish a universal affine ratio bound, realistic-scale
-market impact, scarcity-only value, or a positive feeder-coordination premium.
-The dollar gaps of 1, 8, and 2 require optimization and data precision fine
-enough to resolve them.
-
-\subsection{Accounting optimism versus recoverable coordination value}
-For affine impact anchored at $p_t(0)=a_t$, valuing a \emph{fixed schedule}
-at no-fleet prices gives
-\begin{align}
- \Pi^{\rm naive}(x)&=\sum_t\Delta a_tQ_t-D(x),\\
- \Pi^{\rm naive}(x)-\Pi(x)&=\Delta\sum_t\beta_tQ_t^2=2K(x).
- \label{eq:naivegap}
-\end{align}
-This identity measures accounting optimism from ignoring market impact.
-It does not equal the recoverable gain from changing dispatch. In
-particular, Proposition~\ref{prop:impactbound} bounds the competitive-to-central
-gain by $K(x^{\rm W})$, at most half the naive-accounting gap for that
-competitive schedule in this affine model. The original study's reported
-approximately \$500,000 naive versus \$323,000 realized value (about
-$1.55\times$), and its $1.15\times$ figure for 50,000 units, should be
-classified as reported accounting-impact comparisons, not coordination
-premiums. Equation~\eqref{eq:naivegap} applies only if those runs actually
-use the affine price model and the same fixed schedule on both sides.
-
-\subsection{Minimal checks for the existing implementation}
-\begin{enumerate}
-\item \textbf{Declare the feasible model.} State whether paths are indivisible,
-charge/discharge exclusivity is exact, or a convex relaxation is used.
-Verify SoC recursions, reserve and terminal conditions, and every feeder limit
-on executed actions. For a relaxed solution, inspect $c_{it}g_{it}$.
-\item \textbf{Identify the baseline.} Distinguish threshold output,
-independent horizon optimization, competitive potential optimization, and
-finite-player potential optimization. Record any safety projection.
-\item \textbf{Use an equilibrium certificate when claiming equilibrium.}
-On the convex model, a global first-order gap is
-\[
- r_{\rm W}(x)=\max_{y\in\X}\langle\nabla\Phi(x),y-x\rangle\ge0.
-\]
-It is zero exactly at a competitive variational equilibrium. Replace
-$\Phi$ with $\Psi$ for a variational finite-player Nash certificate. A
-general GNE instead requires checking feasible unilateral improvement
-$\max_{y_i\in\X_i(x_{-i})}[\pi_i(y_i,x_{-i})-\pi_i(x)]$ for every $i$;
-these tests certify different equilibrium concepts.
-\item \textbf{Certify the central solve.} For concave $\Pi$, the analogous
-first-order gap bounds the objective suboptimality. For an exact mixed-integer
-model, retain the incumbent value and global bound. Use tolerances and data
-precision small relative to the claimed dollar premium.
-\item \textbf{Check the zero-value case.} With $\beta_t=0$ and nonbinding
-shared constraints, independent optimal and central values must agree
-within numerical accuracy by Proposition~\ref{prop:separable}.
-\item \textbf{Separate mechanisms.} Evaluate a two-by-two design: binding
-versus nonbinding network constraints, crossed with zero versus positive
-price impact. Compare threshold and independent optimal controls separately.
-Network and price effects can interact; their gains are not presumed additive.
-\item \textbf{Use comparable information and scoring.} Apply the same
-forecasts, scenario, reserve policy, terminal treatment, and degradation
-costs. Score each dispatch at its own induced prices. State the horizon and
-report $\Delta V$, dollars per battery, and a ratio only when meaningful.
-\end{enumerate}
-
-\subsection{ERCOT anchoring and identification limits}
-ERCOT publishes SCED locational marginal prices normally every five minutes
-and settlement-point prices every 15 minutes \cite{ercot-lmp,ercot-spp}.
-Historical hub and load-zone settlement prices are publicly cataloged
-\cite{ercot-history}. Dispatch resolution and settlement aggregation must
-be matched explicitly; a hub average is a proxy, not automatically the
-fleet's actual settlement exposure. A residential fleet settling at a load
-zone should use that zone's price, not a hub average.
+\subsection{ERCOT anchoring}
 
 One transparent counterfactual specification is
 \begin{equation}
  p_t(Q_t)=p_t^{\rm obs}-\beta_t(Q_t-Q_t^{\rm ref}).
  \label{eq:historicalanchor}
 \end{equation}
-The reference dispatch $Q_t^{\rm ref}$ must match the price anchor. Setting
-it to zero treats the modeled fleet as an incremental hypothetical fleet;
-it is not a reconstruction of an existing fleet whose actions already
-affected observed prices. Historical price/load correlation alone does not
-identify the causal slope $\beta_t$: supply, renewable output, congestion,
-and reserve conditions also change. Until a credible counterfactual market
-model or identification strategy is available, report impact slopes as
-scenario assumptions and sweep them, including zero.
+The reference dispatch $Q_t^{\rm ref}$ must match the price anchor.
 
-Market vintage must also be explicit. ERCOT implemented Real-Time
-Co-optimization Plus Batteries on December 5, 2025 \cite{ercot-rtcb}.
-The legacy ORDC price-adder framework was replaced by ancillary-service
-demand curves with that transition \cite{ercot-ordc}. A legacy ORDC
-specification should therefore be tied to an appropriate historical period,
-not silently applied as the current market-clearing mechanism. A fixed
-offer-cap truncation is an additional modeling assumption, not a general
-derivation of settlement prices or price-impact slopes.
+
 
 \section{What the Two-Graph Model Establishes}
 The physical graph supplies shared feasibility constraints; the strategy
@@ -1125,37 +810,7 @@ while the propositions above specify which conclusions hold beyond those
 scenarios.
 
 \appendix
-\section{Optional Allocation and Participation Accounting}
-\label{app:allocation}
 
-Allocation is separate from dispatch optimality. For a realized nonnegative
-gain $\Delta V$, choose declared weights $\phi_i\ge0$ with $\sum_i\phi_i=1$
-and set $M_i=\phi_i\Delta V$. This rule is budget-balanced and nonnegative;
-it does not establish marginal contribution, incentive compatibility,
-individual rationality, or a scarcity-targeting rule. A Shapley allocation
-requires a separately defined coalition-value game and is not automatically
-nonnegative without further assumptions on that game.
-
-If one \emph{postulates} the scalar utility
-\begin{equation}
- R_i(\theta)=M_i(2\theta-\theta^2)-h_i\theta^2,
- \qquad0\le\theta\le1,\quad M_i,h_i\ge0,
- \label{eq:participation}
-\end{equation}
-then, for $M_i+h_i>0$, strict concavity gives
-\begin{equation}
- \theta_i^*=\frac{M_i}{M_i+h_i},\qquad
- R_i(\theta_i^*)=\frac{M_i^2}{M_i+h_i}.
- \label{eq:theta}
-\end{equation}
-If $M_i=h_i=0$, every $\theta\in[0,1]$ is optimal. These formulas follow
-from the assumed utility, not from the two-graph game; no dispatch rule is
-derived from them. In particular, battery-specific interpolation between
-two feasible fleet schedules can violate joint network constraints. A
-\emph{common} interpolation coefficient preserves feasibility only in a
-convex feasible model, and need not preserve exact operating modes. This
-optional participation model is not used in any main theorem or reported
-simulation comparison.
 
 \begin{thebibliography}{99}
 \bibitem{rosenthal}
