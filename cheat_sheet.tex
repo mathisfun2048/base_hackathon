@@ -1,0 +1,264 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{booktabs,array}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+\usepackage{url}
+\setlength{\emergencystretch}{2em}
+\setlist[itemize]{itemsep=2pt,leftmargin=*}
+\setlist[enumerate]{itemsep=3pt,leftmargin=*}
+\newtheorem{proposition}{Proposition}
+\newtheorem{definition}{Definition}
+\newcommand{\R}{\mathbb R}
+\newcommand{\X}{\mathcal X}
+\newcommand{\dd}{\mathrm d}
+\newcommand{\cen}{\mathrm C}
+\newcommand{\adv}{\mathrm{A}}
+\newcommand{\argmax}{\operatorname*{arg\,max}}
+
+\title{Fleet Coordination on Two Graphs:\\
+\large Consolidated Findings and the Adversarial (Red-Team) Extension}
+\author{}
+\date{Working summary}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+\noindent This is a one-stop summary of the model and results developed so far,
+followed by the bridge to the adversarial question the reviewers asked us to
+pursue. The central message is a single reusable idea: a distributed battery
+fleet gains \emph{leverage over the grid and the price} only through three
+couplings---endogenous price, shared network limits, and (for an adversary) a
+detection budget---and that leverage turns on at a \emph{scale threshold}. The
+same machinery that measures a coordination \emph{premium} for the owner
+measures an adversary's \emph{capability}. The adversarial section is framed as
+vulnerability mapping and detection on representative topologies, consistent
+with a ``make the grid better, never worse'' posture; it is not an operational
+attack guide.
+\end{abstract}
+
+\section{The model in one page}
+
+\paragraph{Two coupled graphs.}
+$G_1$ (physical) is a radial feeder with LinDistFlow flows; thermal and voltage
+limits define the set $\mathcal A_t\subseteq\R^N$ of \emph{physically legal
+joint injections} at time $t$. $G_2^i$ (strategy) is battery $i$'s
+time-expanded state-of-charge graph; a path is a charge/discharge trajectory
+$x_i=(c_i,g_i,e_i)$, with net injection $q_{it}=g_{it}-c_{it}$ and fleet
+aggregate $Q_t=\sum_i q_{it}$. $G_1$ prunes joint moves; $G_2$ chooses among
+what remains.
+
+\paragraph{Price and payoff.}
+Settlement price is aggregate-dependent,
+\begin{equation}
+p_t(Q_t)=f_t(L_t-Q_t),\qquad f_t\ \text{nondecreasing},\qquad
+\text{affine case } p_t=a_t-\beta_t Q_t,\ \beta_t\ge 0 .
+\label{eq:price}
+\end{equation}
+Realized fleet profit and the centralized problem are
+\begin{equation}
+\Pi(x)=\sum_t \Delta\,Q_t\,p_t(Q_t)-D(x),\qquad
+x^{\cen}\in\argmax_{x\in\X}\Pi(x),
+\label{eq:profit}
+\end{equation}
+with $D$ degradation cost and $\X$ the joint feasible set (local SoC/power
+limits, household backup reserve, energy-neutral horizon, and
+$q(t)\in\mathcal A_t$). Batteries are energy-limited (ours: $\approx$ 40\,kWh /
+20\,kW, i.e.\ a two-hour asset), which caps sustained discharge.
+
+\paragraph{Three regimes, one difference: the price each internalizes.}
+\begin{center}
+\begin{tabular}{@{}lll@{}}
+\toprule
+Regime & Marginal price term & Affine form\\
+\midrule
+Competitive price-taker & $p_t(Q_t)$ & $p_t$\\
+Finite strategic battery $i$ & $p_t(Q_t)+q_{it}p_t'(Q_t)$ & $p_t-\beta_t q_{it}$\\
+Central fleet & $p_t(Q_t)+Q_t p_t'(Q_t)$ & $p_t-\beta_t Q_t$\\
+\bottomrule
+\end{tabular}
+\end{center}
+The taker ignores its own impact; the planner internalizes the whole fleet's
+impact $Q_t p_t'$. That single term is the self-cannibalization the fleet
+avoids---and, later, the lever an adversary pulls.
+
+\section{Key results (consolidated)}
+
+\begin{enumerate}
+\item \textbf{Competitive $=$ concave-potential maximizer.} The competitive
+(price-taking / Wardrop) solution maximizes
+$\Phi(x)=\sum_t\Delta\int_0^{Q_t}p_t(s)\dd s-\sum_i D_i$, which is concave; if
+each $p_t$ is strictly decreasing the \emph{aggregate} $Q^{\mathrm W}$ is
+unique (individual trajectories need not be). Correction to a common slip:
+this potential's maximizer is the \emph{competitive} outcome, \emph{not} the
+social optimum---conflating them forces the premium to $1$.
+
+\item \textbf{Affine games have an exact potential.} Under $p_t=a_t-\beta_tQ_t$
+the finite-player strategic game admits the exact potential
+$\Psi(x)=\sum_t\Delta[a_tQ_t-\tfrac{\beta_t}{2}Q_t^2-\tfrac{\beta_t}{2}\sum_i
+q_{it}^2]-\sum_iD_i$; global maximizers are (variational) Nash equilibria.
+
+\item \textbf{Central dominance.} For any feasible baseline $x^{\mathrm B}$,
+$\Pi(x^{\cen})\ge\Pi(x^{\mathrm B})$, so $\rho_{\mathrm B}=V_\cen/V_{\mathrm
+B}\ge1$ when $V_{\mathrm B}>0$.
+
+\item \textbf{Separability $\Rightarrow$ zero premium.} If prices are
+exogenous, the feasible set is a product, and the objective is additive, then
+central optimization equals the sum of independent optima---coordination adds
+\emph{nothing}. A positive premium requires breaking one hypothesis:
+\emph{shared network limits}, \emph{endogenous price}, or \emph{risk}.
+
+\item \textbf{Affine impact bound.} With $K(x)=\tfrac{\Delta}{2}\sum_t\beta_t
+Q_t^2$, the competitive-to-central gain obeys $0\le\Pi(x^{\cen})-\Pi(x^{\mathrm
+W})\le K(x^{\mathrm W})$; the premium is small when impact slopes and dispatch
+are small.
+
+\item \textbf{No universal $4/3$ for profit.} A two-period affine example
+($p_1=20+z,\ p_2=120-z$, capacity $C\uparrow50$) gives
+$\rho_{\mathrm W}\to\infty$. The classical $4/3$ is a routing-\emph{cost}
+bound and does not transfer to arbitrage profit.
+
+\item \textbf{Scaling is an assumption, not a gift.} Individual price impact
+vanishes as $N\to\infty$ (correction $\le\tfrac{\Delta\varepsilon_N}{2}\sum_t
+\beta_tM_t\to0$), while the \emph{aggregate} correction $\beta_tQ_t$ can
+persist. A deterministic mean-field limit is not implied by size alone;
+common signals keep aggregate behavior correlated.
+\end{enumerate}
+
+\section{Coincident-peak / regulatory context}
+
+The 4CP transmission regime is the institutional reason a single 15-minute
+interval carries outsized weight, but for a \emph{residential} fleet it is
+\emph{context, not a revenue line}: residential transmission is billed
+volumetrically, so coincident-peak timing is monetized through the energy and
+portfolio objectives already in the model, not a transmission credit. Cycling
+with round-trip efficiency $<1$ slightly \emph{raises} total metered energy, so
+the win is temporal energy-price spread, not avoided wires charges. The regime
+is scheduled to change (Senate Bill 6; a 12CP / 30-minute proposal under PUCT
+Project 58484, target Dec.~31 2026), so the setting is parameterized by an
+interval count $m$ and length $\Delta_{\mathrm{CP}}$. ``Regulatory physics''
+(nodal protocols) sits beside electrical physics: together they define what
+efficient---or adversarial---actions look like.
+
+\section{Numerical status (honest)}
+
+\begin{center}
+\begin{tabular}{@{}lrrrr@{}}
+\toprule
+Scenario & Units & Baseline (\$) & Central (\$) & $\Delta V$ (\$)\\
+\midrule
+Calm & 50{,}000 & 11{,}682 & 11{,}683 & 1\\
+Calm & 150{,}000 & 34{,}876 & 34{,}884 & 8\\
+Scarcity & 50{,}000 & 144{,}779 & 144{,}781 & 2\\
+Scarcity & 150{,}000 & 323{,}061 & $\sim$325{,}000 & $\sim$1{,}939\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{itemize}
+\item At realistic ERCOT share the arbitrage coordination premium is
+\textbf{$\approx1.00$}: energy arbitrage alone does not justify coordination.
+\item A naive fleet piling into one spike \emph{overstates} its revenue by
+$\sim$1.15--1.55$\times$; that is the cost of naivety, not a premium over a
+smart baseline.
+\item The premium-bearing regime (binding feeders + endogenous price at scale)
+is not yet quantified---that simulation is the open item, and it is the same
+simulation the adversarial question needs.
+\end{itemize}
+
+\section{Unifying thesis}
+
+\begin{center}
+\emph{Leverage over price and grid $=$ endogenous price ($\beta$) $+$ shared
+network limits ($G_1$) $+$ (for an adversary) a detection budget, and it
+switches on at a scale threshold.}
+\end{center}
+This one sentence organizes the owner's case (where coordination pays) and the
+security case (where an adversary is dangerous). They are the same couplings
+viewed with opposite objectives.
+
+\section{The adversarial extension: same graphs, flipped objective}
+\label{sec:adv}
+
+We keep $G_1$, $G_2$, $\mathcal A_t$, and $\beta_t$ exactly as above. Only the
+objective and one constraint change. This section is a red-team / vulnerability
+formulation on representative or synthetic topologies; outputs are vulnerability
+metrics, detection signatures, and mitigations---not tactics against specific
+infrastructure.
+
+\subsection{Adversary objectives}
+A compromised fleet no longer maximizes $\Pi$. Two canonical objectives:
+\begin{align}
+\text{(Stealth cost inflation)}\quad
+& J^{\adv}_{\text{cost}}(x)=\sum_t\Delta\,w_t\,\underbrace{p_t(Q_t)\,(L_t-Q_t)}_{\text{payment by load}},\\
+\text{(Overt stress)}\quad
+& J^{\adv}_{\text{stress}}(x)=\sum_t\sum_{e}\Big(\tfrac{|P_{et}(x)|}{K_{et}}\Big)^{+}
+\ \ \text{or}\ \ \#\{(n,t):v_{nt}\notin[\underline V_n^2,\overline V_n^2]\}.
+\end{align}
+The stealth adversary maximizes system cost/volatility while remaining feasible
+($x\in\X$, so protection never trips) and \emph{below detection}:
+\begin{equation}
+\big\|\,q_{it}-q_{it}^{\text{benign}}\,\big\|\le \varepsilon
+\quad\text{per interval and per node (a detectability budget).}
+\label{eq:stealth}
+\end{equation}
+The overt adversary drops \eqref{eq:stealth} and drives the joint action toward
+the boundary of $\mathcal A_t$. Analysis identifies \emph{where} that boundary
+is reachable; it is a map, not a recipe.
+
+\subsection{Why the earlier results are already security results}
+\begin{itemize}
+\item \textbf{Separability $\to$ a no-harm zone.} With $\beta_t=0$ and no
+binding feeder, the adversary's problem separates and its per-interval impact
+is bounded by \eqref{eq:stealth}; correlated action buys it nothing. Harm, like
+value, requires a coupling.
+\item \textbf{Impact bound $\to$ capability bound.} $K(x)=\tfrac{\Delta}{2}
+\sum_t\beta_tQ_t^2$ caps how far a given fleet can bend the price; it doubles
+as the adversary's maximum cost-inflation lever at a given penetration.
+\item \textbf{Self-cannibalization $\to$ the weapon.} The correlation the owner
+diversifies away is exactly what the adversary maximizes to swing price or
+stress a feeder. Coordinated-vs-independent harm is the mirror of the
+coordination premium $\rho$.
+\end{itemize}
+
+\subsection{Three questions to answer (the deliverable)}
+\begin{enumerate}
+\item \textbf{Scale threshold.} Sweep fleet penetration $\phi$ (share of a
+zone/feeder). Find $\phi^\ast$ at which the maximal price move or the first
+$\mathcal A_t$ violation exceeds a materiality/detection threshold. This is the
+reviewers' ``at what scale do market-making properties emerge,'' answered as a
+security boundary.
+\item \textbf{Correlation premium.} Quantify
+$\text{harm}(\text{coordinated})/\text{harm}(\text{independent})$ vs.\ $\phi$:
+how much extra damage comes purely from acting in concert.
+\item \textbf{Stealth frontier.} Trace maximum harm as a function of the
+detectability budget $\varepsilon$: the trade-off between staying invisible and
+moving the system.
+\end{enumerate}
+
+\subsection{Defensive outputs}
+\begin{itemize}
+\item \textbf{Vulnerability map:} rank nodes/feeders by marginal harm
+sensitivity---which $\mathcal A_t$ constraints sit closest to binding under an
+adversarial $Q$, and which nodes have the largest local $\partial p/\partial
+Q$. (Collapse the $\sim$20k-unit fleet into representative super-nodes; use
+published representative grid topologies.)
+\item \textbf{Detection signature:} the correlated-dispatch statistic that
+separates adversarial from benign operation (benign diversifies; adversary
+correlates)---a monitorable quantity.
+\item \textbf{Mitigations:} per-feeder penetration caps, decorrelation
+requirements, and telemetry-deviation bounds that map directly to
+$\varepsilon$ in \eqref{eq:stealth}.
+\end{itemize}
+
+\subsection{Scoping note for the build}
+A three-node toy is not representative; the interesting regime appears only at
+scale. Minimal credible demonstration: a representative multi-node topology
+with the fleet aggregated to super-nodes, real ERCOT price/load anchoring, and
+one clean emergent result---a penetration threshold, a coordinated-vs-independent
+divergence, or a detectable attack signature. UI is optional; the analysis is
+the substance.
+
+\end{document}

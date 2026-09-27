@@ -1,0 +1,14 @@
+quantity,value
+feeder,representative-radial
+provenance,synthetic; IEEE-123-class 12.47 kV overhead parameters
+concentration node,95
+edges to substation,17
+feeding segment rating (MVA),3.00
+unit power (kW),20
+phi* discharge (units),130
+phi* discharge cause,thermal
+phi* charge (units),108
+phi* charge cause,thermal
+"phi* (binding, units)",108
+phi* aggregate (MW),2.16
+recommended per-feeder cap (units),75

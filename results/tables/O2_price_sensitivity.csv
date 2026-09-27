@@ -1,0 +1,15 @@
+quantity,value
+calm data source,"REAL ERCOT RTM 15-min SPP dashboard, Load Zone lzNorth, 2026-09-26 (pulled 2026-09-26 21:02:00-0500); https://www.ercot.com/api/1/services/read/dashboards/systemWidePrices.json"
+stressed data source,"ERCOT offer-cap scarcity reference (representative of published summer scarcity; $5,000/MWh offer cap); beta from structural inverse-supply curve. Real calm data paired."
+settlement,Load Zone lzNorth
+stressed price ($/MWh),2500.0
+calm price ($/MWh),22.9
+implied load stressed (MW),82524
+implied load calm (MW),43600
+beta scarcity ($/MWh per MW),7.856e-01
+beta calm ($/MWh per MW),2.500e-04
+scarcity/calm sensitivity ratio,3142x
+"fleet price move, scarcity ($/MWh)",314.2 (12.57% of price)
+"fleet price move, calm ($/MWh)",0.100 (0.437% of price)
+fleet MW as % of ~90 GW peak,0.44%
+energy-limited sustain time (h),2.0

@@ -1,0 +1,5 @@
+topology,leverage a_n (fleet nodes),sum a_n,amplification x,relief withheld MW,price helped->withheld $/MWh,harm $M
+radial chain,[1. 1. 1. 1.],4.00,4.00,"4,800","323->2,500",359
+hub & spoke,[1. 1. 1. 1.],4.00,4.00,"4,800","323->2,500",359
+meshed ring,[1.   0.87 0.75 0.38],3.00,3.00,"4,800","614->2,500",311
+long export,[0. 1. 1.],2.00,2.00,"4,800","743->2,500",290

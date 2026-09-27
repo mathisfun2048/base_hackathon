@@ -1,0 +1,7 @@
+grid condition,start PRC (MW),nodes @40kW swing,nodes @20kW load,x fleet (swing-load),fleet alone?
+Today median (REAL),14148,317950,635900,15.90x-31.80x,no
+Today minimum (REAL),9231,195025,390050,9.75x-19.50x,no
+EEA Watch,3000,39250,78500,1.96x-3.92x,no
+EEA1,2300,21750,43500,1.09x-2.17x,no
+EEA2 = Summer 2023-09-06 (documented),1750,8000,16000,0.40x-0.80x,YES
+EEA1 crossover (fleet full-swing),2230,20000,40000,1.00x-2.00x,YES

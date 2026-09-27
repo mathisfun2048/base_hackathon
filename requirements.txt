@@ -1,0 +1,17 @@
+# VPP Red-Team / Vulnerability Analysis — dependencies
+#
+# Core (required; used by every module and sim):
+numpy>=1.24
+scipy>=1.10
+pandas>=2.0
+matplotlib>=3.7
+
+# Optional (real-data + canonical-topology paths). These DO NOT build on
+# Python 3.14 yet (no wheels; lxml needs libxml2). The toolkit degrades
+# gracefully: data/fetch_ercot.py falls back to the calibrated synthetic
+# ORDC/ASDC price path, and data/topology.py falls back to a representative
+# radial feeder implemented directly (LinDistFlow on the tree). Install these
+# on Python <=3.12 to enable the real ERCOT pull and the IEEE test feeders.
+gridstatus>=0.29 ; python_version < "3.13"
+pandapower>=2.14 ; python_version < "3.13"
+networkx>=3.0

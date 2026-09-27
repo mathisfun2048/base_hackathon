@@ -1,0 +1,16 @@
+quantity,value
+data source (price shape),ERCOT offer-cap scarcity reference (representative of publis
+benign damage/day (frac life),1.683e-05
+benign EFC/day,0.61
+max aging multiplier at eps=1,7.37x
+aging multiplier at set-point eps*,1.74x
+detection set-point eps*,0.25
+-- protective bounds (mitigation) --,
+max C-rate,0.5
+DoD floor,0.1
+max EFC/day,2.0
+min dwell (s),300.0
+max ramp (kW/s),0.333
+-- monitored signature --,
+max cross-unit correlation,0.2
+max directional bias,0.1

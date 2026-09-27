@@ -1,0 +1,14 @@
+control,set_point,maps_to
+Per-feeder penetration cap,~75 units,O1 phi*=108
+Synchronized-dispatch interlock,on,O1/O3
+Max cross-unit correlation,0.2,O6/O3
+Max directional bias,0.1,O5/O6
+Per-unit deviation alarm,eps<0.25,O4/O5
+Max C-rate,0.5,O5
+DoD floor,0.1,O5
+Max EFC/day,2.0,O5
+Min dwell,300 s,O5
+Max reversals/day,48,O8
+No charging under EEA1,PRC<2300 MW,O7
+Sequential (CUSUM) bias monitor,on,O9
+Monitoring window,96 intervals,O6

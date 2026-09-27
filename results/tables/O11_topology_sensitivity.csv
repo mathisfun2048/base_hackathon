@@ -1,0 +1,4 @@
+archetype,phi* (units),aggregate MW,binding limit,direction
+"dense urban (short lines, pad xfmr)",47,0.94,wires overheat,charge
+suburban (medium lateral),142,2.84,wires overheat,charge
+"rural long-line (thin, far)",79,1.58,voltage/flicker,discharge

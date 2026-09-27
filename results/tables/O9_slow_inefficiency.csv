@@ -1,0 +1,5 @@
+eps,cost_inflation_$M_per_day,detection_day,cumulative_$M_at_detection,undetected_180d_$M
+0.03,0.098,48,4.68,17.6
+0.06,0.195,26,5.07,35.1
+0.12,0.390,6,2.34,70.3
+0.20,0.651,3,1.95,117.2
