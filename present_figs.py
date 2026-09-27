@@ -17,6 +17,7 @@ import numpy as np
 
 from sims._common import ROOT, plt
 from sims import o11b_feeder_map as o11b
+from sims.o10_market_power import GROWTH_PER_YEAR
 from data.topology import representative_feeder
 from models import adversary, degradation, feasibility
 from models.price import calibrate_to_observed, load_for_price
@@ -181,11 +182,21 @@ def neighborhood_map():
     return _save(fig, "03_neighborhood_map.png")
 
 
+def _time_to_reach(units):
+    """Plain-language time for the fleet to grow to `units` at GROWTH_PER_YEAR."""
+    if units <= FLEET_UNITS:
+        return "Base is already there"
+    years = np.log(units / FLEET_UNITS) / np.log(GROWTH_PER_YEAR)
+    if years >= 1:
+        return f"Base reaches it in ~{years:.0f} years" if round(years) > 1 else "Base reaches it in ~1 year"
+    months = max(1, round(years * 12))
+    return f"Base reaches it in ~{months} month{'s' if months > 1 else ''}"
+
+
 def blackout_threshold():
     rows = {r["grid condition"]: r for r in _read_table("O7_system_crash.csv")}
     items = [
-        ("Typical grid today", "Today median (REAL)"),
-        ("Tightest point today", "Today minimum (REAL)"),
+        ("Today", "Today minimum (REAL)"),
         ("Emergency watch", "EEA Watch"),
         ("Emergency level 1", "EEA1"),
         ("Emergency level 2\n(Sept 6, 2023)", "EEA2 = Summer 2023-09-06 (documented)"),
@@ -198,10 +209,7 @@ def blackout_threshold():
     colors = [RED if n <= FLEET_UNITS else GRAY for n in needed]
     ax.barh(y, needed / 1e3, color=colors, height=0.62)
     for yi, n in zip(y, needed):
-        mult = n / FLEET_UNITS
-        txt = (f"{n/1e3:,.0f}k  ({mult:.0f}x the fleet)" if mult >= 1.5
-               else f"{n/1e3:,.0f}k  ({mult:.0%} of the fleet)" if mult < 1
-               else f"{n/1e3:,.0f}k  (about the whole fleet)")
+        txt = f"{n/1e3:,.0f}k  ({_time_to_reach(n)})"
         ax.text(n / 1e3 + 4, yi, txt, va="center", fontsize=13,
                 color=RED if n <= FLEET_UNITS else INK,
                 fontweight="bold" if n <= FLEET_UNITS else "normal")
@@ -214,10 +222,10 @@ def blackout_threshold():
     ax.set_xlim(0, needed.max() / 1e3 * 1.32)
     ax.set_ylim(-0.6, len(items) - 0.2)
     ax.set_xlabel("batteries needed to trigger rolling blackouts (thousands)")
-    _headline(ax, "The fleet can't black out a healthy grid, but it can tip one in crisis",
-              "Batteries that would all need to switch from discharging to charging at once")
-    _source(fig, "Blackout = ERCOT firm load shed (reserves <= 1,430 MW). 'Today' rows use "
-                 "real ERCOT reserve data; emergency levels use ERCOT's defined thresholds.")
+    _source(fig, "Blackout = ERCOT firm load shed (reserves <= 1,430 MW). 'Today' uses "
+                 "real ERCOT reserve data (tightest point); emergency levels use ERCOT's defined thresholds.\n"
+                 f"Time to reach assumes the Base fleet keeps growing {GROWTH_PER_YEAR:.0f}x per year "
+                 f"from {FLEET_UNITS:,} units today.")
     return _save(fig, "04_blackout_threshold.png")
 
 
